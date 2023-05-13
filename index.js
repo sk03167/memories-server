@@ -14,8 +14,10 @@ app.use(bodyParser.urlencoded({limit:"30mb",extended:true}));
 app.use(cors());
 
 import postRoutes from './routes/posts.js';
+import userRoutes from './routes/user.js';
 
 app.use('/posts',postRoutes);
+app.use('/user',userRoutes);
 
 
 //Had to cahnge my DNS server because my default dns server would not resolve this url, hence not allowing to conncet to db.
@@ -34,7 +36,7 @@ const PORT = process.env.PORT || 5000;
 // console.log("url env is ",process.env.CONNECTION_URL);
 
 app.get("/",(req,res)=>{
-  res.send("Welcom to memories api")
+  res.send("Welcome to memories api")
 });
 
   mongoose.connect(process.env.CONNECTION_URL,  {
