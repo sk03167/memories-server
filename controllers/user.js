@@ -30,7 +30,7 @@ export const signup = async(req,res)=>{
         // console.log(hashedPassword);
         const newUser =  userModel({name:`${firstName} ${lastName}`,email,password:hashedPassword});
         const result = await newUser.save();
-        console.log(result);
+        // console.log(result);
         const token = jwt.sign({email:result.email, id:result._id}, process.env.ENCRYPTION_KEY, {expiresIn:"1h"});      
         res.status(200).json({result, token});
     } catch (error) {
