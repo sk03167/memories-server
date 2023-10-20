@@ -1,12 +1,21 @@
 import {postMessage} from "../models/postMessage.js";
+import { Kafka } from "kafkajs";
 import mongoose from "mongoose";
+import produce_message from "../kafka_tool/producer/kafka_producer.js"
+// Creating a Kafka instance
+// const kafka = new Kafka({
+//   clientId: 'memories__prod',
+//   brokers: ['localhost:9092'], // Replace with your Kafka broker addresses
+// });
+
 
 export const getPosts = async (req,res)=>{
     try {
-        // console.log("going to try");
-       const postMessages = await postMessage.find();
-    //    console.log("try successful");
-    //    console.log(postMessages);
+        console.log("going to try");
+       const postMessages = await postMessage.find({});
+       console.log("try successful");
+       console.log(postMessages[2])
+    produce_message(JSON.stringify(postMessages[2]));
        res.status(200).json(postMessages);
     } catch (error) {
         // console.log("caught an error");
@@ -14,6 +23,38 @@ export const getPosts = async (req,res)=>{
     }
 }
 // export getPosts;
+
+export const getPostsBySearch = async (req, res) => {
+    const { searchQuery, tags } = req.query;
+    // console.log(req);
+    try {
+      const titleRegex = new RegExp(searchQuery, 'i');
+      const posts = await postMessage.find({
+        $or: [
+          { title: { $regex: `(?i)${searchQuery}(?-i)`}},
+          { tags: { $in: tags.split(',') }}
+        ]
+      });
+      console.log(posts,tags,searchQuery);
+      res.json({ data: posts });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'An error occurred' });
+    }
+  };
+
+// export const getPostsBySearch = async (req, res)=>{
+//     const {searchTerm, tags} = req.query;
+//     try {
+//         const title = new RegExp(searchTerm, 'i');
+//         const posts = await postMessage.find({
+//             $or:[{title:{$regex: title} },{tags:{$in:tags.split(',')}}]
+//         });
+//         res.json({data:posts});
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
 
 export const createPost = async (req,res)=>{
     // console.log(req.body);
@@ -68,7 +109,7 @@ export const deletePost = async (req,res)=>{
         post.likes.push(req.userId);
     }else{
         //dislike
-        console.log("disliking")
+        // console.log("disliking")
         post.likes = post.likes.filter((id)=>id!==String(req.userId));
     }
 
