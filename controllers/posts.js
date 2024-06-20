@@ -14,8 +14,8 @@ export const getPosts = async (req,res)=>{
         console.log("going to try");
        const postMessages = await postMessage.find({});
        console.log("try successful");
-       console.log(postMessages[2])
-    produce_message(JSON.stringify(postMessages[2]));
+       console.log(postMessages.length)
+      produce_message(JSON.stringify(postMessages.length));
        res.status(200).json(postMessages);
     } catch (error) {
         // console.log("caught an error");
